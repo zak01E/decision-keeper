@@ -11,6 +11,7 @@ import {
   matchesKeyword,
   saveDecision,
 } from '../decisions';
+import { syncDecisionsToGraph } from '../graph';
 
 const resolver = new Resolver();
 
@@ -86,7 +87,7 @@ resolver.define('getPanelData', async ({ context }) => {
  */
 resolver.define('recordFromComment', async ({ payload, context }) => {
   const issueKey = context.extension.issue.key;
-  return saveDecision({
+  const { decision, changed } = await saveDecision({
     title: payload.title,
     rationale: payload.text,
     decidedBy: payload.author,
@@ -94,6 +95,8 @@ resolver.define('recordFromComment', async ({ payload, context }) => {
     commentId: payload.commentId,
     recordedBy: context.accountId,
   });
+  await syncDecisionsToGraph(changed);
+  return decision;
 });
 
 export const handler = resolver.getDefinitions();

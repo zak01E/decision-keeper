@@ -148,9 +148,28 @@ modules:
       render: native
       title: Decisions
       icon: https://developer.atlassian.com/platform/forge/images/icons/issue-panel-icon.svg
+  # Publishes decisions to Atlassian's Teamwork Graph as documents linked to
+  # their Jira issue. Needs no admin input: the admin only clicks "Connect".
+  graph:connector:
+    - key: decision-keeper-graph
+      name: Decision Keeper
+      icons:
+        light: https://developer.atlassian.com/platform/forge/images/icons/issue-panel-icon.svg
+        dark: https://developer.atlassian.com/platform/forge/images/icons/issue-panel-icon.svg
+      objectTypes:
+        - atlassian:document
+      capabilities:
+        replicatesPermissions: false
+        syncFidelity: upsert
+        supportsIncrementalSync: true
+      datasource:
+        onConnectionChange:
+          function: onConnectionChange
   function:
     - key: resolver
       handler: index.handler
+    - key: onConnectionChange
+      handler: index.onConnectionChange
     - key: recordDecision
       handler: index.recordDecision
     - key: listDecisions
@@ -167,6 +186,9 @@ permissions:
     - storage:app
     - read:jira-work
     - search:confluence
+    - write:object:jira
+    - read:object:jira
+    - delete:object:jira
 app:
   runtime:
     name: nodejs24.x

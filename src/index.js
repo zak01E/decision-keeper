@@ -14,10 +14,13 @@ import {
   matchesKeyword,
   saveDecision,
 } from './decisions';
+import { syncDecisionsToGraph } from './graph';
 
-// The Jira issue panel resolver is exported from here so the manifest can
-// point every function at the same bundle entry point (index.js).
+// The Jira issue panel resolver and the Teamwork Graph connection callback
+// are exported from here so the manifest can point every function at the
+// same bundle entry point (index.js).
 export { handler } from './resolvers';
+export { onConnectionChange } from './graph';
 
 /**
  * Action "record-decision": saves a new decision in the registry.
@@ -29,7 +32,7 @@ export async function recordDecision(payload) {
     return { error: 'A decision needs both a title and a rationale.' };
   }
 
-  const decision = await saveDecision({
+  const { decision, changed } = await saveDecision({
     title,
     rationale,
     decidedBy,
@@ -38,6 +41,7 @@ export async function recordDecision(payload) {
     supersedes,
     recordedBy: payload.context?.accountId,
   });
+  await syncDecisionsToGraph(changed);
   return { saved: decision };
 }
 

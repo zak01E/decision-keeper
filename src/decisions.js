@@ -95,9 +95,10 @@ export function looksLikeDecision(text) {
 }
 
 /**
- * Saves a new decision and returns it. If `supersedes` points to an older
- * decision, that decision is marked as superseded so it no longer shows up
- * as active.
+ * Saves a new decision. If `supersedes` points to an older decision, that
+ * decision is marked as superseded so it no longer shows up as active.
+ * Returns the new decision plus every decision that changed (the new one and,
+ * if any, the superseded one) so callers can sync them to Teamwork Graph.
  */
 export async function saveDecision({ title, rationale, decidedBy, source, tags, supersedes, recordedBy, commentId }) {
   // Get the next sequential id (DEC-1, DEC-2, ...).
@@ -123,19 +124,28 @@ export async function saveDecision({ title, rationale, decidedBy, source, tags, 
     recordedAt: new Date().toISOString(),
   };
 
+  const changed = [decision];
+
   // Mark the older decision as replaced by this one.
   if (decision.supersedes) {
     const oldKey = DECISION_PREFIX + decision.supersedes;
     const oldDecision = await kvs.get(oldKey);
     if (oldDecision) {
-      await kvs.set(oldKey, { ...oldDecision, status: 'superseded', supersededBy: id });
+      const superseded = {
+        ...oldDecision,
+        status: 'superseded',
+        supersededBy: id,
+        updatedAt: decision.recordedAt,
+      };
+      await kvs.set(oldKey, superseded);
+      changed.push(superseded);
     } else {
       decision.supersedes = null;
     }
   }
 
   await kvs.set(DECISION_PREFIX + id, decision);
-  return decision;
+  return { decision, changed };
 }
 
 /**
