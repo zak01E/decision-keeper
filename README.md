@@ -42,6 +42,15 @@ A site admin first enables the tools in **Atlassian Administration → Connected
 Expose tools to MCP-compatible apps**. Each user then signs in through Atlassian's OAuth consent screen,
 and every call runs with that user's own permissions.
 
+### Teamwork Graph connector: decisions everywhere in Atlassian
+Every decision is published to Atlassian's **Teamwork Graph** (`graph:connector`) as a document linked
+to its Jira work item. Rovo search and *every* Rovo agent — not just ours — can then find the team's
+decisions and see which work they relate to. Superseded decisions are updated in the graph too.
+
+An admin connects it once in **Atlassian Administration → Connected apps → Decision Keeper →
+Connections → Teamwork Graph connectors → Connect**. Existing decisions are backfilled immediately;
+new ones are pushed as soon as they are recorded (from Rovo, the issue panel or MCP).
+
 ## How it works
 
 | Part | File |
@@ -50,11 +59,13 @@ and every call runs with that user's own permissions.
 | Rovo agent actions | `src/index.js` |
 | Issue panel resolver | `src/resolvers/index.js` |
 | Issue panel UI (UI Kit) | `src/frontend/index.jsx` |
+| Teamwork Graph connector | `src/graph.js` |
 | Modules, actions, scopes | `manifest.yml` |
 
 Jira and Confluence are always queried **as the current user** (`asUser()`), so people only ever
 see decisions from content they are allowed to access. Scopes are kept minimal:
-`storage:app`, `read:jira-work`, `search:confluence`.
+`storage:app`, `read:jira-work`, `search:confluence`, plus `write/read/delete:object:jira` for the
+Teamwork Graph connector.
 
 ## Run it yourself
 
