@@ -39,6 +39,17 @@ modules:
         - list-decisions
         - find-jira-decisions
         - find-confluence-decisions
+  # Exposes the same actions as MCP tools, so external AI assistants (Claude,
+  # Cursor, VS Code...) can query and record team decisions once a site admin
+  # enables the app's tools. Endpoint: https://mcp.atlassian.com/forge/<appId>
+  rovo:mcp:
+    - key: decision-keeper-mcp
+      name: Decision Keeper
+      tools:
+        - record-decision
+        - list-decisions
+        - find-jira-decisions
+        - find-confluence-decisions
   action:
     - key: record-decision
       name: Record a decision
