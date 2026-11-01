@@ -25,6 +25,23 @@ On every issue:
 - **Decisions found in comments** — comments that read like decisions ("we decided…", "agreed…"), with a one-click *Save as decision*.
 - **Decisions made on this issue** — what is already recorded for this issue.
 
+### MCP server: decisions in any AI assistant
+The same four tools are exposed through Forge's `rovo:mcp` module, so Claude, Cursor, VS Code or any
+MCP-compatible client can ask about — and record — team decisions without leaving the editor.
+
+| Tool | What it does |
+|---|---|
+| `list-decisions` | Active decisions, optionally filtered by keyword |
+| `record-decision` | Saves a decision (title, rationale, author, source, tags, supersedes) |
+| `find-jira-decisions` | Decision-like Jira comments about a topic |
+| `find-confluence-decisions` | Confluence pages recording decisions about a topic |
+
+Endpoint: `https://mcp.atlassian.com/forge/ad3473e0-41c7-4594-9098-e12fa4ca4d2c`
+
+A site admin first enables the tools in **Atlassian Administration → Connected apps → Decision Keeper →
+Expose tools to MCP-compatible apps**. Each user then signs in through Atlassian's OAuth consent screen,
+and every call runs with that user's own permissions.
+
 ## How it works
 
 | Part | File |
