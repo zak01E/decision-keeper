@@ -1,4 +1,4 @@
-# Decision Keeper — Privacy Policy
+# Decision Keeper: Privacy Policy
 
 _Last updated: 1 November 2026_
 

@@ -2,7 +2,7 @@
 
 **The memory of your team's decisions, built on Atlassian Forge.**
 
-Teams make decisions in meetings, Jira comments and Confluence pages — then forget them.
+Teams make decisions in meetings, Jira comments and Confluence pages, then forget them.
 The same debates come back, and new work quietly contradicts what was already agreed.
 
 Decision Keeper captures decisions where they happen, explains *why* they were made,
@@ -14,20 +14,20 @@ Built for [Codegeist 2026](https://codegeist2026.devpost.com/).
 
 ### Rovo agent: Decision Keeper
 Ask in Rovo chat:
-- *"Why did we choose PostgreSQL?"* — searches the registry, Jira comments and Confluence pages, and cites its sources.
-- *"Save it in the registry."* — records the decision with its rationale, author, source and tags (`DEC-1`, `DEC-2`, …).
-- *"I'm planning to migrate to MongoDB. Does this contradict anything?"* — compares your plan with active decisions and warns you, quoting the decision, its date and its rationale.
-- *"We changed our mind…"* — records a new decision that supersedes the old one.
+- *"Why did we choose PostgreSQL?"*: searches the registry, Jira comments and Confluence pages, and cites its sources.
+- *"Save it in the registry."*: records the decision with its rationale, author, source and tags (`DEC-1`, `DEC-2`, …).
+- *"I'm planning to migrate to MongoDB. Does this contradict anything?"*: compares your plan with active decisions and warns you, quoting the decision, its date and its rationale.
+- *"We changed our mind…"*: records a new decision that supersedes the old one.
 
 ### Jira issue panel: Decisions
 On every issue:
-- **Check before you change course** — active decisions from elsewhere that share keywords with this issue.
-- **Decisions found in comments** — comments that read like decisions ("we decided…", "agreed…"), with a one-click *Save as decision*.
-- **Decisions made on this issue** — what is already recorded for this issue.
+- **Check before you change course**: active decisions from elsewhere that share keywords with this issue.
+- **Decisions found in comments**: comments that read like decisions ("we decided…", "agreed…"), with a one-click *Save as decision*.
+- **Decisions made on this issue**: what is already recorded for this issue.
 
 ### MCP server: decisions in any AI assistant
 The same four tools are exposed through Forge's `rovo:mcp` module, so Claude, Cursor, VS Code or any
-MCP-compatible client can ask about — and record — team decisions without leaving the editor.
+MCP-compatible client can look up and record team decisions without leaving the editor.
 
 | Tool | What it does |
 |---|---|
@@ -44,7 +44,7 @@ and every call runs with that user's own permissions.
 
 ### Teamwork Graph connector: decisions everywhere in Atlassian
 Every decision is published to Atlassian's **Teamwork Graph** (`graph:connector`) as a document linked
-to its Jira work item. Rovo search and *every* Rovo agent — not just ours — can then find the team's
+to its Jira work item. Rovo search and other Rovo agents can then find the team's
 decisions and see which work they relate to. Superseded decisions are updated in the graph too.
 
 An admin connects it once in **Atlassian Administration → Connected apps → Decision Keeper →
