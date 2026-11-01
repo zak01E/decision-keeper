@@ -1,0 +1,164 @@
+modules:
+  rovo:agent:
+    - key: decision-keeper-agent
+      name: Decision Keeper
+      description: Remembers your team's decisions from Jira and Confluence, explains why they were made, and warns before someone contradicts them.
+      prompt: >
+        You are Decision Keeper, the memory of a team's decisions.
+
+        Your job:
+        1. Answer "why did we decide X?" questions. First call list-decisions with
+        a short keyword. If nothing relevant is found, call find-jira-decisions and
+        find-confluence-decisions with the same keyword. Always cite the source
+        (decision id, Jira issue key or Confluence page link) and the date.
+
+        2. Record new decisions. When the user states a decision, or when you find
+        a decision in Jira or Confluence that is not yet in the registry, offer to
+        save it with record-decision. Before saving, make sure you have a short
+        title, the rationale (the "why"), and if possible who decided and the
+        related Jira issue key or Confluence link. Ask for missing information.
+
+        3. Detect contradictions. When the user describes a plan, a new ticket or a
+        proposal, call list-decisions with the main keywords and compare. If the
+        plan goes against an active decision, warn clearly: quote the decision,
+        its date, its rationale and its source, then suggest either following the
+        decision or explicitly superseding it with a new recorded decision.
+
+        4. Supersede decisions. When the team changes its mind, record the new
+        decision with record-decision and pass the old decision id in supersedes.
+
+        Be concise. Never invent a decision: only report what the actions return.
+        If nothing is found, say so.
+      conversationStarters:
+        - What has the team decided recently?
+        - Why did we choose this approach?
+        - Does my plan contradict a past decision?
+        - Record a new decision
+      actions:
+        - record-decision
+        - list-decisions
+        - find-jira-decisions
+        - find-confluence-decisions
+  action:
+    - key: record-decision
+      name: Record a decision
+      function: recordDecision
+      actionVerb: CREATE
+      description: >
+        Saves a team decision in the Decision Keeper registry. Use it when the
+        user states a decision or confirms that a decision found in Jira or
+        Confluence should be saved.
+      inputs:
+        title:
+          title: Title
+          type: string
+          required: true
+          description: A short summary of what was decided, e.g. "Use PostgreSQL for the billing service".
+        rationale:
+          title: Rationale
+          type: string
+          required: true
+          description: Why the decision was made.
+        decidedBy:
+          title: Decided by
+          type: string
+          required: false
+          description: Name of the person or group who made the decision.
+        source:
+          title: Source
+          type: string
+          required: false
+          description: Jira issue key (e.g. PROJ-12) or Confluence page URL where the decision was made.
+        tags:
+          title: Tags
+          type: string
+          required: false
+          description: Comma-separated keywords that help find the decision later, e.g. "database, billing".
+        supersedes:
+          title: Supersedes
+          type: string
+          required: false
+          description: Id of an older decision that this one replaces, e.g. "DEC-3".
+    - key: list-decisions
+      name: List decisions
+      function: listDecisions
+      actionVerb: GET
+      description: >
+        Returns decisions from the Decision Keeper registry, newest first. Pass a
+        keyword to only get the decisions that mention it. Use it to answer
+        "why" questions and to check a plan for contradictions.
+      inputs:
+        keyword:
+          title: Keyword
+          type: string
+          required: false
+          description: Optional word to filter decisions (searched in title, rationale and tags).
+        includeSuperseded:
+          title: Include superseded
+          type: boolean
+          required: false
+          description: Set to true to also return decisions that were replaced by newer ones.
+    - key: find-jira-decisions
+      name: Find decisions in Jira
+      function: findJiraDecisions
+      actionVerb: GET
+      description: >
+        Searches Jira comments for sentences that look like decisions ("we
+        decided", "agreed", "decision") related to a keyword.
+      inputs:
+        keyword:
+          title: Keyword
+          type: string
+          required: true
+          description: Topic to look for, e.g. "postgres".
+        projectKey:
+          title: Project key
+          type: string
+          required: false
+          description: Optional Jira project key to limit the search, e.g. "PROJ".
+    - key: find-confluence-decisions
+      name: Find decisions in Confluence
+      function: findConfluenceDecisions
+      actionVerb: GET
+      description: >
+        Searches Confluence pages for decisions related to a keyword (pages
+        labelled "decision" or containing decision wording).
+      inputs:
+        keyword:
+          title: Keyword
+          type: string
+          required: true
+          description: Topic to look for, e.g. "postgres".
+  jira:issuePanel:
+    - key: decision-keeper-issue-panel
+      resource: main
+      resolver:
+        function: resolver
+      render: native
+      title: Decisions
+      icon: https://developer.atlassian.com/platform/forge/images/icons/issue-panel-icon.svg
+  function:
+    - key: resolver
+      handler: index.handler
+    - key: recordDecision
+      handler: index.recordDecision
+    - key: listDecisions
+      handler: index.listDecisions
+    - key: findJiraDecisions
+      handler: index.findJiraDecisions
+    - key: findConfluenceDecisions
+      handler: index.findConfluenceDecisions
+resources:
+  - key: main
+    path: src/frontend/index.jsx
+permissions:
+  scopes:
+    - storage:app
+    - read:jira-work
+    - search:confluence
+app:
+  runtime:
+    name: nodejs24.x
+    memoryMB: 256
+    architecture: arm64
+  id: ari:cloud:ecosystem::app/ad3473e0-41c7-4594-9098-e12fa4ca4d2c

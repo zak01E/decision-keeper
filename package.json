@@ -1,0 +1,16 @@
+{
+  "name": "decision-keeper",
+  "version": "0.2.0",
+  "description": "Decision Keeper: the memory of your team's decisions, for Jira, Confluence and Rovo",
+  "main": "index.js",
+  "private": true,
+  "license": "MIT",
+  "dependencies": {
+    "@forge/api": "^8.4.0",
+    "@forge/bridge": "^7.2.1",
+    "@forge/kvs": "^2.1.1",
+    "@forge/react": "^12.4.0",
+    "@forge/resolver": "^2.0.2",
+    "react": "^18.3.1"
+  }
+}
